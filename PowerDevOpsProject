@@ -1,0 +1,121 @@
+#app/app.py
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Flask CI/CD with Jenkins + Ansible + K8s!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+
+#app/app.py.txt
+flask
+
+# Dockerfile
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY app/app.py.txt .
+RUN pip install --no-cache-dir -r app.py.txt
+
+COPY app/ .
+
+EXPOSE 5000
+
+# Development server
+CMD ["python", "app.py"]
+# For production, switch to:
+# CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+
+#k8s/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-app
+        image: BYPASSPOWER/flask-app:latest
+        ports:
+        - containerPort: 5000
+
+#k8s/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app-service
+spec:
+  selector:
+    app: flask-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+  type: LoadBalancer
+
+# ansible/hosts
+[app_servers]
+3.144.116.242 ansible_user=ubuntu
+
+#ansible/deploy.yml
+- name: Deploy Flask App with Docker
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Pull Docker image
+      community.docker.docker_image:
+        name: <your-dockerhub-username>/flask-app
+        tag: latest
+        source: pull
+
+    - name: Run container
+      community.docker.docker_container:
+        name: flask-app
+        image: <your-dockerhub-username>/flask-app:latest
+        state: started
+        restart_policy: always
+        published_ports:
+          - "5000:5000"
+
+#Jenkinsfile
+pipeline {
+    agent any
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/<your-username>/my-devops-project.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t <your-dockerhub-username>/flask-app:latest .'
+            }
+        }
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push <your-dockerhub-username>/flask-app:latest'
+                }
+            }
+        }
+        stage('Deploy with Ansible') {
+            steps {
+                sh 'ansible-playbook ansible/deploy.yml -i ansible/hosts'
+            }
+        }
+    }
+}
+
