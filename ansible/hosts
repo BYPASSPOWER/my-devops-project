@@ -1,2 +1,2 @@
 [app_servers]
-your-server-ip ansible_user=ubuntu
+3.144.116.242 ansible_user=ubuntu
