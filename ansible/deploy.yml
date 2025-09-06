@@ -1,0 +1,18 @@
+- name: Deploy Flask App with Docker
+  hosts: app_servers
+  become: yes
+  tasks:
+    - name: Pull Docker image
+      community.docker.docker_image:
+        name: BYPASSPOWER/flask-app
+        tag: latest
+        source: pull
+
+    - name: Run container
+      community.docker.docker_container:
+        name: flask-app
+        image: BYPASSPOWER/flask-app:latest
+        state: started
+        restart_policy: always
+        published_ports:
+          - "5000:5000"
