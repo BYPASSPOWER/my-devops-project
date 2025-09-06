@@ -76,14 +76,14 @@ spec:
   tasks:
     - name: Pull Docker image
       community.docker.docker_image:
-        name: <your-dockerhub-username>/flask-app
+        name: BYPASSPOWER/flask-app
         tag: latest
         source: pull
 
     - name: Run container
       community.docker.docker_container:
         name: flask-app
-        image: <your-dockerhub-username>/flask-app:latest
+        image: BYPASSPOWER/flask-app:latest
         state: started
         restart_policy: always
         published_ports:
@@ -95,12 +95,12 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/<your-username>/my-devops-project.git'
+                git 'https://github.com/BYPASSPOWER/my-devops-project.git'
             }
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t <your-dockerhub-username>/flask-app:latest .'
+                sh 'docker build -t BYPASSPOWER/flask-app:latest .'
             }
         }
         stage('Push to DockerHub') {
