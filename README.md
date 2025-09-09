@@ -1,5 +1,5 @@
 # my-devops-project
-🎯 Goal of Your Project
+🎯 Goal of my Project
 
 The goal is to demonstrate a complete CI/CD DevOps pipeline for a simple Python Flask web app using modern DevOps tools.
 
