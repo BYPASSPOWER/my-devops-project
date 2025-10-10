@@ -3,7 +3,7 @@
 
 The goal is to demonstrate a complete CI/CD DevOps pipeline for a simple Python Flask web app using modern DevOps tools.
 
-You’re showing how code moves from development → containerization → automation → deployment.
+I'm showing how code moves from development → containerization → automation → deployment.
 
 🛠️ Tools in Your Stack
 
