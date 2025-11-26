@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from flask import Flask, jsonify
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
@@ -17,3 +18,14 @@ def metrics():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
 
+=======
+from flask import Flask
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Flask CI/CD with Jenkins + Ansible + K8s!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+>>>>>>> c5b1e3239a975390b4d4bdd3bccfb3ef13d81772
