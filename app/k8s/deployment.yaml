@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-lab-app
+  namespace: devops-lab
+  labels:
+    app: devops-lab-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: devops-lab-app
+  template:
+    metadata:
+      labels:
+        app: devops-lab-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "5000"
+    spec:
+      containers:
+        - name: devops-lab-app
+          image: devops-lab-app:1.0.0  # will be updated via Jenkins
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+
